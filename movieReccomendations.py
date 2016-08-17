@@ -96,8 +96,10 @@ def normalizeRatings(Y, R):
 
 print 'Loading movie ratings dataset.'
 data = scipy.io.loadmat('data/ex8_movies.mat')
-R = data['R']
-Y = data['Y']
+R = data['R']  # R is a 1682x943 matrix. R[i, j] where i is movie and j is user. R(i, j) = 1 id user j gave a rating to movie i
+Y = data['Y']  # A matrix 1682x943 with 1682 moies annd 943 users
+
+#R[0, :] movie number 0, which is Toy story, checking for all users
 print 'Average rating for movie 1 (Toy Story): %8.8f/5 ' \
         %np.mean(Y[0,np.where(R[0,:] -1 == 0)])
 
@@ -105,6 +107,8 @@ plt.figure(figsize=(5, 5))
 plt.imshow(Y)
 #plt.show()
 
+
+#Debugging the collaborative filtering cost function
 data1 = scipy.io.loadmat('data/ex8_movieParams.mat')
 X = data1['X']
 theta = data1['Theta']
@@ -118,7 +122,7 @@ theta = theta[0:num_users, 0:num_features]
 Y = Y[0:num_movies, 0:num_users]
 R = R[0:num_movies, 0:num_users]
 
-
+#Evaluate the costfunction
 J, grad = cofiCostFunc(np.append(X.flatten(), theta.flatten()), Y, R, num_users, num_movies, num_features, 0)
 
 print(J)
@@ -138,7 +142,8 @@ movieList = LoadMovieList()
 
 my_ratings = np.zeros((1682,1))
 
-my_ratings[1] = 4
+#Ratings of a few random movies
+my_ratings[1] = 4 # Toy story, rating 4...
 my_ratings[98] = 2
 my_ratings[7] = 3
 my_ratings[12]= 5
@@ -171,15 +176,17 @@ data = scipy.io.loadmat('data/ex8_movies.mat')
 R = data['R']
 Y = data['Y']
 
+#Add my own ratings toe the data matirces
 Y = np.append(my_ratings, Y, 1)
 R = np.append((my_ratings != 0), R, 1)
 
+#Normaliz ratings
 [Ynorm, Ymean] = normalizeRatings(Y, R)
 
 #Usefule values
 num_users = np.shape(Y)[1]
 num_movies = np.shape(Y)[0]
-num_features = 10 # Antal "kategorier"
+num_features = 10 # number of "unknown" categpries(features)
 
 #set init params (Theta, X)
 X = np.random.randn(num_movies, num_features)
@@ -198,6 +205,7 @@ theta = theta.x
 
 print(theta)
 
+#Unfold the theta
 X = theta[:num_movies*num_features].reshape(num_movies, num_features)
 Theta = theta[num_movies*num_features:].reshape(num_users, num_features)
 
